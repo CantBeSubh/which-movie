@@ -2,6 +2,8 @@ import "globals.css"
 
 import { useEffect, useState } from "react"
 
+import { ModeToggle } from "~components/mode-toggle"
+import { ThemeProvider } from "~components/theme-provider"
 import { Button } from "~components/ui/button"
 import { Input } from "~components/ui/input"
 import { ytShortsRegex } from "~lib/constants"
@@ -29,16 +31,20 @@ const IndexPopup = () => {
   }, [])
 
   return (
-    <div className="flex h-full w-[25rem] flex-col gap-4 p-4">
-      {videoId && <p className="mb-4 text-sm">Video ID: {videoId}</p>}
-      <Input
-        value={apiKey}
-        onChange={(e) => setApiKey(e.target.value)}
-        placeholder="Enter your OpenAI API key"
-      />
-      <Input value={movieName} placeholder="Movie name" disabled />
-      <Button className="w-fit">Submit</Button>
-    </div>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <div className="flex h-full w-[25rem] flex-col gap-4 p-4">
+        {videoId && <p className="mb-4 text-sm">Video ID: {videoId}</p>}
+        <Input
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          placeholder="Enter your OpenAI API key"
+        />
+        <Input value={movieName} placeholder="Movie name" disabled />
+        <div className="flex gap-2">
+          <Button className="w-fit">Submit</Button> <ModeToggle />
+        </div>
+      </div>
+    </ThemeProvider>
   )
 }
 
