@@ -3,11 +3,12 @@ import "globals.css"
 import { useEffect, useState } from "react"
 
 import { Button } from "~components/ui/button"
+import { Input } from "~components/ui/input"
+import { ytShortsRegex } from "~lib/constants"
 
 const IndexPopup = () => {
-  const ytShortsRegex =
-    /(?:https:\/\/www\.youtube\.com\/shorts\/)([a-zA-Z0-9_-]+)/
-  const [movieName, setMovieName] = useState("")
+  const [movieName, setMovieName] = useState<string>("")
+  const [apiKey, setApiKey] = useState<string>("")
   const [videoId, setVideoId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -28,9 +29,15 @@ const IndexPopup = () => {
   }, [])
 
   return (
-    <div className="flex h-[25rem] w-[25rem] flex-col p-4">
+    <div className="flex h-full w-[25rem] flex-col gap-4 p-4">
       {videoId && <p className="mb-4 text-sm">Video ID: {videoId}</p>}
-      <Button>Hello</Button>
+      <Input
+        value={apiKey}
+        onChange={(e) => setApiKey(e.target.value)}
+        placeholder="Enter your OpenAI API key"
+      />
+      <Input value={movieName} placeholder="Movie name" disabled />
+      <Button className="w-fit">Submit</Button>
     </div>
   )
 }
