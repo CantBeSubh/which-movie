@@ -39,7 +39,7 @@ class MovieService:
             return response.json()
         except Exception as e:
             print(f"Error getting comments thread: {str(e)}")
-            return {}
+            return e
 
     def _get_comment_soup(self, comments: dict):
         try:
@@ -62,19 +62,16 @@ class MovieService:
             return "\n\n".join(comment_soups)
         except Exception as e:
             print(f"Error generating comment soup: {str(e)}")
-            return ""
+            raise e
 
     @traceable(name="perform_movie_rag", run_type="chain")
     async def perform_rag(self, video_id):
         try:
-            print(f"Performing RAG for video {video_id}")
             comments = self._get_comments_thread(video_id)
-            print(f"Comments retrieved: {len(comments.get('items'))}")
             comment_soup = self._get_comment_soup(comments)
-            print("Comment soup generated")
             messages = await prompt.ainvoke({"comment_soup": comment_soup})
             response = await self.llm.ainvoke(messages)
             return response.movie_name
         except Exception as e:
             print(f"Error performing RAG: {str(e)}")
-            return ""
+            raise e
