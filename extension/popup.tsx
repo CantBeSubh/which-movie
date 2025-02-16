@@ -107,6 +107,7 @@ const IndexPopup = () => {
           onChange={(e) => setApiKey(e.target.value)}
           placeholder="Enter your OpenAI API key"
           disabled={!videoId}
+          type="password"
         />
         <div className="grid h-8 grid-rows-2 gap-2">
           <VideoIdValidation videoId={videoId} />
