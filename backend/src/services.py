@@ -23,7 +23,7 @@ class MovieResponse(BaseModel):
 class MovieService:
     def __init__(self, openai_api_key):
         self.llm = ChatOpenAI(
-            model="gpt-4o",
+            model="gpt-4o-mini",
             temperature=0,
             max_tokens=None,
             timeout=None,
