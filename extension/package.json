@@ -1,8 +1,8 @@
 {
-  "name": "extension",
-  "displayName": "Extension",
+  "name": "which-movie",
+  "displayName": "Which Movie",
   "version": "0.0.1",
-  "description": "Get the movie name from that dam movie clip",
+  "description": "Get the movie name from that damm movie clip",
   "author": "Subhranshu",
   "scripts": {
     "dev": "plasmo dev",
