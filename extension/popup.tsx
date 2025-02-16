@@ -67,8 +67,8 @@ const IndexPopup = () => {
           </Button>
           <ModeToggle />
         </div>
-        <ApiValidation apiKey={apiKey} />
         <VideoIdValidation videoId={videoId} />
+        {videoId && <ApiValidation apiKey={apiKey} />}
       </div>
     </ThemeProvider>
   )
