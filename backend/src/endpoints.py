@@ -1,18 +1,23 @@
 import time
 
 from fastapi import APIRouter, HTTPException, Request
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from src.services import MovieService
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 
 @router.get("/")
-def hello_world():
-    return {"message": "OK"}
+@limiter.limit("10/minute")
+def hello_world(request: Request):
+    return {"hello": "there!"}
 
 
 @router.post("/movie")
+@limiter.limit("5/minute")
 async def get_movie(request: Request):
     body = await request.json()
     openai_key = body.get("openai_key")
