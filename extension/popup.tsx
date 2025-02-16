@@ -2,7 +2,10 @@ import "globals.css"
 
 import { useEffect, useState } from "react"
 
+import { Skeleton } from "~/components/ui/skeleton"
 import { AlertMessage } from "~components/alert-message"
+import { ScriptCopyBtn } from "~components/magicui/script-copy-btn"
+import { SparklesText } from "~components/magicui/sparkles-text"
 import { ModeToggle } from "~components/mode-toggle"
 import { ThemeProvider } from "~components/theme-provider"
 import { Button } from "~components/ui/button"
@@ -61,6 +64,7 @@ const IndexPopup = () => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
+    setMovieName("")
     try {
       const url = `${WHICH_MOVIE_API_ENDPOINT}/movie`
       const payload = {
@@ -74,8 +78,14 @@ const IndexPopup = () => {
         },
         body: JSON.stringify(payload)
       })
+      if (response.status == 429) {
+        throw new Error("5 reqs per min.")
+      }
       const data = await response.json()
       setMovieName(data.movie_name)
+    } catch (error) {
+      console.error("Error fetching movie name:", error)
+      setMovieName(error.message ?? "Error fetching movie name")
     } finally {
       setIsSubmitting(false)
     }
@@ -83,24 +93,51 @@ const IndexPopup = () => {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className="flex h-full w-72 flex-col gap-4 p-4">
+      <div className="flex flex-col h-full gap-4 p-4 w-96">
+        <div className="flex items-center justify-between">
+          <SparklesText
+            text="WHICH MOVIE"
+            className="text-2xl text-center"
+            sparklesCount={5}
+          />
+          <ModeToggle />
+        </div>
         <Input
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
           placeholder="Enter your OpenAI API key"
+          disabled={!videoId}
         />
-        <Input value={movieName} placeholder="Movie name" disabled />
-        <div className="flex gap-2">
+        <div className="grid h-8 grid-rows-2 gap-2">
+          <VideoIdValidation videoId={videoId} />
+          <ApiValidation apiKey={apiKey} />
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
           <Button
             className="w-fit"
             disabled={!videoId || !apiKey || isSubmitting}
             onClick={handleSubmit}>
             Submit
           </Button>
-          <ModeToggle />
+
+          {isSubmitting && (
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-[38px] w-[200px] rounded-lg" />
+              <Skeleton className="h-[38px] w-[38px] rounded-lg" />
+            </div>
+          )}
+
+          {movieName && (
+            <ScriptCopyBtn
+              showMultiplePackageOptions={false}
+              codeLanguage="shell"
+              lightTheme="nord"
+              darkTheme="vitesse-dark"
+              commandMap={{ name: movieName }}
+            />
+          )}
         </div>
-        <VideoIdValidation videoId={videoId} />
-        {videoId && <ApiValidation apiKey={apiKey} />}
       </div>
     </ThemeProvider>
   )
