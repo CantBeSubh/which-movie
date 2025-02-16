@@ -33,7 +33,6 @@ const IndexPopup = () => {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="flex h-full w-[25rem] flex-col gap-4 p-4">
-        {videoId && <p className="mb-4 text-sm">Video ID: {videoId}</p>}
         <Input
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
@@ -41,8 +40,16 @@ const IndexPopup = () => {
         />
         <Input value={movieName} placeholder="Movie name" disabled />
         <div className="flex gap-2">
-          <Button className="w-fit">Submit</Button> <ModeToggle />
+          <Button className="w-fit" disabled={!videoId || !apiKey}>
+            Submit
+          </Button>
+          <ModeToggle />
         </div>
+        {videoId && (
+          <p className="text-xs font-extralight text-muted-foreground">
+            Video ID: {videoId}
+          </p>
+        )}
       </div>
     </ThemeProvider>
   )
