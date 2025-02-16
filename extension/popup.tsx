@@ -10,6 +10,12 @@ import { Input } from "~components/ui/input"
 import { ValidMessage } from "~components/valid-message"
 import { ytShortsRegex } from "~lib/constants"
 
+const WHICH_MOVIE_API_ENDPOINT =
+  process.env.PLASMO_PUBLIC_WHICH_MOVIE_API_ENDPOINT
+if (!WHICH_MOVIE_API_ENDPOINT) {
+  throw new Error("WHICH_MOVIE_API_ENDPOINT is not set")
+}
+
 const ApiValidation = ({ apiKey }: { apiKey: string }) => {
   if (!apiKey) {
     return <AlertMessage message="Please enter your OPENAI API key" />
@@ -28,6 +34,7 @@ const VideoIdValidation = ({ videoId }: { videoId: string | null }) => {
 }
 
 const IndexPopup = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [movieName, setMovieName] = useState<string>("")
   const [apiKey, setApiKey] = useState<string>("")
   const [videoId, setVideoId] = useState<string | null>(null)
@@ -52,6 +59,28 @@ const IndexPopup = () => {
     getVideoId()
   }, [])
 
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    try {
+      const url = `${WHICH_MOVIE_API_ENDPOINT}/movie`
+      const payload = {
+        video_id: videoId,
+        openai_key: apiKey
+      }
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+      const data = await response.json()
+      setMovieName(data.movie_name)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="flex h-full w-72 flex-col gap-4 p-4">
@@ -62,7 +91,10 @@ const IndexPopup = () => {
         />
         <Input value={movieName} placeholder="Movie name" disabled />
         <div className="flex gap-2">
-          <Button className="w-fit" disabled={!videoId || !apiKey}>
+          <Button
+            className="w-fit"
+            disabled={!videoId || !apiKey || isSubmitting}
+            onClick={handleSubmit}>
             Submit
           </Button>
           <ModeToggle />
